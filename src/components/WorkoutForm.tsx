@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useWorkoutContext } from "../context/workoutContext";
 
 const WorkoutForm = () =>{
   const [title,setTitle] = useState("");
@@ -6,6 +7,7 @@ const WorkoutForm = () =>{
   const [reps,setReps] = useState("");
   const [error,setError] = useState("");
   const [emptyFields ,setEmptyFields] = useState<string[]>([])
+  const {addWorkout} = useWorkoutContext();
 
 
 
@@ -22,6 +24,7 @@ const WorkoutForm = () =>{
      })
      const json = await response.json()
      if (!response.ok) {
+     
         setEmptyFields(json.emptyFields)
         setError(json.error)
      }
@@ -31,6 +34,12 @@ const WorkoutForm = () =>{
         setLoad("")
         setReps("")
         setEmptyFields([])
+        const id = Math.random().toString();
+        const createdAtDate = new Date().toString();
+        const loadNumber = parseFloat(load);
+        const repsNumber = parseFloat(reps)
+        const newWorkout = {_id:id,title:title,load:loadNumber,reps:repsNumber,createdAt:createdAtDate}
+        addWorkout(newWorkout)
 
      }
   }

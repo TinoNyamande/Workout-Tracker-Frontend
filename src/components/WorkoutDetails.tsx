@@ -1,3 +1,5 @@
+import { useWorkoutContext } from "../context/workoutContext"
+import {format} from "date-fns"
 interface Workout {
     _id:string,
     title:string,
@@ -10,11 +12,15 @@ interface Props {
 }
 
 const  WorkoutDetails: React.FC<Props> = ({workout})=> {
+    const {deleteWorkout} = useWorkoutContext();
 
     const handleDelete = async () =>{
         const response = await fetch('http://localhost:4000/api/workouts/' +workout._id,{
             method:"DELETE"
-        })
+        });
+        if (response.ok) {
+            deleteWorkout(workout)
+        }
     
     }
 
@@ -23,7 +29,7 @@ const  WorkoutDetails: React.FC<Props> = ({workout})=> {
             <h4>{workout.title}</h4>
             <p><strong>Load (kg):</strong>{workout.load}</p>
             <p><strong>Reps :</strong> {workout.load}</p>
-            <p>{workout.createdAt}</p>
+            <p>{format(new Date(workout.createdAt),"dd-MM-yy HH:MM")}</p>
             <span onClick={handleDelete}>delete</span>
            </div>
     )

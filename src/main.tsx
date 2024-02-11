@@ -9,6 +9,5 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <WorkoutContextProvider>
     <App />
     </WorkoutContextProvider>
-    
   </React.StrictMode>,
 )
