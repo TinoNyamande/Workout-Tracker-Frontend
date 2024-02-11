@@ -1,7 +1,6 @@
-import React, { PropsWithChildren, createContext, useContext, useEffect, useReducer } from "react";
+import { useEffect, useReducer } from "react";
 
 interface WorkoutObject {
-    _id:string,
     title: string,
     load: number,
     reps: number,
@@ -14,8 +13,7 @@ interface WorkoutState {
 
 type WorkoutReducerAction =
     | { type: "CREATE_WORKOUT", value: WorkoutObject }
-    | { type: "LOAD_WORKOUTS", value: WorkoutObject[] }
-    |{type:"DELETE_WORKOUTS" ,value:WorkoutObject};
+    | { type: "LOAD_WORKOUTS", value: WorkoutObject[] };
 
 const workoutsReducerFunction = (state: WorkoutState, action: WorkoutReducerAction) => {
     switch (action.type) {
@@ -25,28 +23,12 @@ const workoutsReducerFunction = (state: WorkoutState, action: WorkoutReducerActi
         case "LOAD_WORKOUTS": {
             return { ...state, workouts: action.value };
         }
-        case "DELETE_WORKOUTS" : {
-              return {...state,workouts:[...state.workouts.filter((w)=>w._id !== action.value._id)]}
-        }
         default:
             return state;
     }
 }
 
-const WorkoutContext = createContext<{
-    state: WorkoutState;
-    deleteWorkout:(workout:WorkoutObject)=>void;
-    addWorkout: (workout: WorkoutObject) => void;
-}>({
-    state: { workouts: [] },
-    addWorkout: () => {},
-    deleteWorkout:()=>{}
-});
-
-export const useWorkoutContext = () => useContext(WorkoutContext);
-
-
-export const WorkoutContextProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
+const Counter = () => {
     const [state, dispatch] = useReducer(workoutsReducerFunction, { workouts: [] });
 
     useEffect(() => {
@@ -60,14 +42,19 @@ export const WorkoutContextProvider: React.FC<PropsWithChildren<{}>> = ({ childr
 
     const addWorkout = (newWorkout: WorkoutObject) => {
         dispatch({ type: "CREATE_WORKOUT", value: newWorkout });
-    };
-    const deleteWorkout = (deleteWorkout:WorkoutObject) =>{
-        dispatch({type:"DELETE_WORKOUTS" ,value:deleteWorkout});
-    };
-   
+    }
+
     return (
-        <WorkoutContext.Provider value={{ state, addWorkout, deleteWorkout }}>
-            {children}
-        </WorkoutContext.Provider>
+        <div>
+            <h1>Workouts</h1>
+            <button onClick={() => addWorkout({ title: "New Workout", load: 0, reps: 0, createdAt: new Date().toISOString() })}>Add Workout</button>
+            <ul>
+                {state.workouts.map((workout, index) => (
+                    <li key={index}>{workout.title} - Load: {workout.load}, Reps: {workout.reps}</li>
+                ))}
+            </ul>
+        </div>
     );
 }
+
+export default Counter;
