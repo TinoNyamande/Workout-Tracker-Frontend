@@ -1,4 +1,5 @@
 import React, { PropsWithChildren, createContext, useContext, useEffect, useReducer } from "react";
+import Cookies from "js-cookie"
 
 interface WorkoutObject {
     _id:string,
@@ -51,7 +52,7 @@ export const WorkoutContextProvider: React.FC<PropsWithChildren<{}>> = ({ childr
 
     useEffect(() => {
         const getData = async () => {
-            const response = await fetch('http://localhost:4000/api/workouts');
+            const response = await fetch('http://localhost:4000/api/workouts',{headers:{"Authorization":Cookies.get("token")}});
             const json = await response.json();
             dispatch({ type: "LOAD_WORKOUTS", value: json });
         }
